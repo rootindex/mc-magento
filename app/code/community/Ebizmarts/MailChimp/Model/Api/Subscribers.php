@@ -337,6 +337,9 @@ class Ebizmarts_MailChimp_Model_Api_Subscribers
         $mergeVars = $this->getMergeVars($subscriber);
         $md5HashEmail = md5(strtolower($subscriber->getSubscriberEmail()));
         try {
+	    if (!$api) {
+		return;
+	    }
             $api->lists->members->addOrUpdate(
                 $listId, $md5HashEmail, $subscriber->getSubscriberEmail(), $newStatus, null, $forceStatus, $mergeVars,
                 null, null, null, null
@@ -467,6 +470,12 @@ class Ebizmarts_MailChimp_Model_Api_Subscribers
         $storeId = $subscriber->getStoreId();
         $listId = $helper->getGeneralList($storeId);
         $api = $helper->getApi($storeId);
+
+	//bail out if no api was returned
+        if (!$api) {
+             return;
+        }
+
         try {
             $md5HashEmail = md5(strtolower($subscriber->getSubscriberEmail()));
             $api->lists->members->update($listId, $md5HashEmail, null, 'unsubscribed');
